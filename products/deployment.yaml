@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-service
+  labels:
+    app: aspnet3core
+spec:
+  ports:
+  - port: 8888
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: aspnet3core
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-deployment
+  labels:
+    app: aspnet3core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aspnet3core
+  template:
+    metadata:
+      labels:
+        app: aspnet3core
+        environment: development
+    spec:
+      containers:
+        - name: aspnet3-products
+          image: deathstroke45/petshopproducts:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: apphost
+              value: k8s
+            - name: appenvironment
+              value: development
